@@ -2,8 +2,11 @@
 
 import React from 'react';
 import PDFGenerator from './PDFGenerator';
+import { getActaById,getEquipoById,getEmpleadoByCedula } from '@/app/actions/funciones_Actas';
 
 export default function ActaDetails({ acta }) {
+
+
   if (!acta) {
     return <p>No se encontró información del acta.</p>;
   }
@@ -14,7 +17,10 @@ export default function ActaDetails({ acta }) {
 
       <div className="space-y-2">
         <p>
-          <span className="font-medium">Cédula del Empleado:</span> {acta.EMP_CEDULA}
+          <span className="font-medium">Cédula del Empleado que recibe:</span> {acta.EMP_CEDULA}
+        </p>
+        <p>
+          <span className="font-medium">Empleado que recibe:</span> {acta.NOMBRE_RECIBE}
         </p>
         <p>
           <span className="font-medium">Fecha de Entrega:</span> {acta.FECH_ENTR}
@@ -43,16 +49,16 @@ export default function ActaDetails({ acta }) {
             {acta.detalles.map((detalle, index) => (
               <li key={index} className="bg-gray-100 p-3 rounded">
                 <p>
-                  <span className="font-medium">ID Equipo:</span> {detalle.equipos_ID_EQP}
+                  <span className="font-medium">ID Equipo:</span> {detalle.equipo.ID_EQP}
                 </p>
                 <p>
-                  <span className="font-medium">Fecha de Entrega:</span> {detalle.FECH_ENTR}
+                  <span className="font-medium">Equipo:</span> {detalle.equipo.NOMBRE}
                 </p>
                 <p>
-                  <span className="font-medium">Fecha de Devolución:</span> {detalle.FECH_DEV}
+                  <span className="font-medium">Descripcion:</span> {detalle.equipo.DESCRIPCION}
                 </p>
                 <p>
-                  <span className="font-medium">Estado:</span> {detalle.DET_ESTADO}
+                  <span className="font-medium">Estado:</span> {detalle.equipo.ESTADO}
                 </p>
               </li>
             ))}

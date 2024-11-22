@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createActa, updateActa, getEmpleados, getEquipos } from '@/app/actions/funciones_Actas';
 
-export default function ActaForm({ actaInicial = null, onSubmitSuccess = () => {} }) {
+export default function ActaForm({ actaInicial = null, onSubmitSuccess = () => { } }) {
   const [acta, setActa] = useState({
     emp_cedula: '',
     fecha_entrega: '',
@@ -25,6 +25,12 @@ export default function ActaForm({ actaInicial = null, onSubmitSuccess = () => {
   const [empleados, setEmpleados] = useState([]);
   const [equipos, setEquipos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Estados para búsqueda
+  const [empleadoSearch, setEmpleadoSearch] = useState('');
+  const [equipoSearch, setEquipoSearch] = useState('');
+
+
 
   useEffect(() => {
     if (actaInicial) {
@@ -78,7 +84,7 @@ export default function ActaForm({ actaInicial = null, onSubmitSuccess = () => {
     try {
       // Convertir el objeto acta a JSON
       const actaJson = JSON.stringify(acta);
-  
+
       if (acta.id_act) {
         // Actualización
         await updateActa(acta.id_act, actaJson);
@@ -94,7 +100,7 @@ export default function ActaForm({ actaInicial = null, onSubmitSuccess = () => {
       console.error('Error al guardar el acta:', error);
     }
   };
-  
+
 
   if (isLoading) {
     return <p>Cargando datos...</p>;
@@ -107,23 +113,47 @@ export default function ActaForm({ actaInicial = null, onSubmitSuccess = () => {
       </h2>
 
       <div>
+        {/* <label className="block text-sm font-medium">Cédula del Empleado</label>
+        <input
+          type="text"
+          placeholder="Buscar empleado..."
+          value={empleadoSearch}
+          onChange={(e) => setEmpleadoSearch(e.target.value)}
+          className="w-full border p-2 rounded mb-2"
+        />
+        <ul className="border p-2 rounded max-h-40 overflow-y-auto">
+          {empleados
+            .filter((emp) =>
+              emp.nombre.toLowerCase().includes(empleadoSearch.toLowerCase())
+            )
+            .map((emp) => (
+              <li
+                key={emp.cedula}
+                onClick={() => setActa({ ...acta, emp_cedula: emp.cedula })}
+                className={`p-2 cursor-pointer ${acta.emp_cedula === emp.cedula ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'
+                  }`}
+              >
+                {emp.nombre} - {emp.cedula}
+              </li>
+            ))}
+        </ul> */}
         <label className="block text-sm font-medium">Cédula del Empleado</label>
-        <select
+        <input
+          list="empleados-list"
           name="emp_cedula"
           value={acta.emp_cedula || ''}
           onChange={handleActaChange}
+          placeholder="Seleccione o escriba un empleado"
           required
           className="w-full border p-2 rounded"
-        >
-          <option value="" disabled>
-            Seleccione un empleado
-          </option>
+        />
+        <datalist id="empleados-list">
           {empleados.map((emp) => (
             <option key={emp.cedula} value={emp.cedula}>
               {emp.nombre}
             </option>
           ))}
-        </select>
+        </datalist>
       </div>
 
       <div>
@@ -219,7 +249,7 @@ export default function ActaForm({ actaInicial = null, onSubmitSuccess = () => {
       </div>
 
       <div>
-      <label className="block text-sm font-medium">Equipo</label>
+        {/* <label className="block text-sm font-medium">Equipo</label>
         <select
           name="equipos_id_eqp"
           value={detalle.equipos_id_eqp || ''}
@@ -234,12 +264,26 @@ export default function ActaForm({ actaInicial = null, onSubmitSuccess = () => {
               {equip[4]}
             </option>
           ))}
-        </select>
-
-
-
-
+        </select> */}
+        <label className="block text-sm font-medium">Equipo</label>
+        <input
+          list="equipos-list"
+          name="equipos_id_eqp"
+          value={detalle.equipos_id_eqp || ''}
+          onChange={handleDetalleChange}
+          placeholder="Seleccione o escriba un equipo"
+          required
+          className="w-full border p-2 rounded"
+        />
+        <datalist id="equipos-list">
+          {equipos.map((equip) => (
+            <option key={equip[0]} value={equip[0]}>
+              {equip[4]}
+            </option>
+          ))}
+        </datalist>
       </div>
+
 
       <button
         type="button"

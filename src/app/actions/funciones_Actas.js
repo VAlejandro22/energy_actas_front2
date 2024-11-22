@@ -1,5 +1,5 @@
 'use server';
-const url = "http://back_actas:8000";
+const url = "http://localhost:8000";
 import axios from 'axios';
 
 // Función para obtener todas las actas

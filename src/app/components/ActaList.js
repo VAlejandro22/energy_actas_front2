@@ -27,16 +27,14 @@ function ActaList({ actas }) {
   //     .save('document.pdf');
   // };
 
-  const printPage = () => {
-    window.print();
-  };
+
 
   return (
     <div id="content-to-pdf" className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {actas.map((acta) => (
         <div key={acta.ID_ACT} className="p-4 border rounded shadow-sm">
           <h2 className="text-lg font-bold">Acta #{acta.ID_ACT}</h2>
-          <p><strong>Empleado:</strong> {acta.EMP_CEDULA}</p>
+          <p><strong>Cedula Empleado:</strong> {acta.EMP_CEDULA}</p>
           <p><strong>Proyecto:</strong> {acta.PROYECTO}</p>
           <p><strong>JOB:</strong> {acta.JOB}</p>
           <p><strong>Fecha de entrega:</strong> {acta.FECH_ENTR}</p>
@@ -48,17 +46,6 @@ function ActaList({ actas }) {
           </Link>
           
 
-          {/* Botón para generar el PDF */}
-          <div className="mt-4">
-            <PDFGenerator acta={acta} />
-          </div>
-
-          <button
-            onClick={printPage}
-            className="text-red-500 hover:underline"
-          >
-            pdf
-          </button>
         </div>
       ))}
     </div>

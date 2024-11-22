@@ -1,5 +1,6 @@
-import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
-
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from '@react-pdf/renderer';
+import {getEquipoById} from '@/app/actions/funciones_Actas';
+import { useEffect, useState } from 'react';
 // Estilos para el PDF
 const styles = StyleSheet.create({
   page: {
@@ -23,6 +24,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   tableCell: {
+    display: 'flex',
+    textAlign: 'center',    // Centra el texto horizontalmente
+    justifyContent: 'center', // Centra contenido horizontal en flexbox
+    alignItems: 'center',   // Centra contenido vertical en flexbox
+
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: '#000',
@@ -30,8 +36,14 @@ const styles = StyleSheet.create({
     fontSize: 10,
     flex: 1,
   },
+  tableCell2: {
+
+    padding: 0,
+    fontSize: 10,
+    flex: 1,
+  },
   title: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
     fontWeight: 'bold',
     marginBottom: 10,
@@ -48,39 +60,74 @@ const styles = StyleSheet.create({
     fontSize: 10,
     textAlign: 'justify',
   },
+  logo: {
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#000',
+    width: 50,
+    height: 50,
+
+  },
+
 });
 
 // Documento PDF
 function PDFDocument({ acta }) {
+
   if (!acta) return null;
+
+
 
   return (
     <Document>
       <Page style={styles.page}>
-        {/* Encabezado */}
-        <Text style={styles.header}>GT-SI-R-02</Text>
-        <Text style={styles.header}>ACTA DE ENTREGA DE EQUIPOS</Text>
+
+
+        <View style={styles.header}>
+          <View style={styles.table}>
+            <View style={styles.tableRow}>
+              <Image
+                style={[styles.tableCell]}
+                src="https://th.bing.com/th/id/OIP.rdKCkWwjxfE0DuHWy8Z4eQHaHa?rs=1&pid=ImgDetMain" // Reemplaza con la URL de tu imagen
+              />
+              <View style={[styles.tableCell2, { flex: 2 }]}>
+                <Text style={[styles.tableCell]} >GT-SI-R-02</Text>
+                <Text style={[styles.tableCell]}>
+                  REGISTRO{'\n'}ACTA DE ENTREGA DE EQUIPOS
+                </Text>
+              </View>
+              <View style={styles.tableCell2}>
+                <Text style={[styles.tableCell]}>Emisión</Text>
+                <Text style={[styles.tableCell]}>Versión</Text>
+                <Text style={[styles.tableCell]}>Página</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+
+
 
         {/* Datos Generales */}
         <View style={styles.section}>
           <View style={styles.table}>
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Uso</Text>
-              <Text style={styles.tableCell}>{acta.USO || 'N/A'}</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Proyecto</Text>
-              <Text style={styles.tableCell}>{acta.PROYECTO}</Text>
+              <Text style={[styles.tableCell]}>PROYECTO</Text>
+              <Text style={[styles.tableCell, { flex: 2 }]}>{acta.PROYECTO || 'N/A'}</Text>
+              <Text style={[styles.tableCell]}>JOB</Text>
+              <Text style={[styles.tableCell, { flex: 2 }]}>{acta.JOB||'N/A'}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Fecha de Entrega</Text>
-              <Text style={styles.tableCell}>{acta.FECH_ENTR}</Text>
-              <Text style={[styles.tableCell, { flex: 2 }]}>Fecha de Devolución</Text>
-              <Text style={styles.tableCell}>{acta.FECH_DEV || 'N/A'}</Text>
+              <Text style={[styles.tableCell]}>FECHA DE ENTREGA</Text>
+              <Text style={[styles.tableCell, { flex: 2 }]}>{acta.FECH_ENTR||'N/A'}</Text>
+              <Text style={[styles.tableCell]}>FECHA DEVOLUCION</Text>
+              <Text style={[styles.tableCell, { flex: 2 }]}>{acta.FECH_DEV || 'N/A'}</Text>
             </View>
           </View>
         </View>
 
         {/* Detalles de Equipos */}
-        <Text style={styles.title}>Entrega de lo siguiente:</Text>
+        <Text style={styles.title}>POR MEDIO DE LA PRESENTE SE REALIZA LA ENTREGA DE LOS SIGUIENTE:</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
             <Text style={styles.tableCell}>Cantidad</Text>
@@ -88,11 +135,12 @@ function PDFDocument({ acta }) {
             <Text style={styles.tableCell}>Descripción</Text>
           </View>
           {acta.detalles.map((detalle, index) => (
+           
             <View style={styles.tableRow} key={index}>
-              <Text style={styles.tableCell}>1</Text>
-              <Text style={styles.tableCell}>{detalle.equipos_ID_EQP}</Text>
+              <Text style={styles.tableCell}>{detalle.equipo.CANTIDAD||'N/A'}</Text>
+              <Text style={styles.tableCell}>{detalle.equipo.NOMBRE||'N/A'}</Text>
               <Text style={styles.tableCell}>
-                {detalle.DESCRIPCION || 'Sin descripción'}
+                {detalle.equipo.DESCRIPCION || 'N/A'}
               </Text>
             </View>
           ))}
@@ -102,14 +150,37 @@ function PDFDocument({ acta }) {
         <Text style={styles.section}></Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { flex: 1 }]}>Entregado Por</Text>
-            <Text style={[styles.tableCell, { flex: 1 }]}>Recibido Por</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>ENTREGADO POR</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>RECIBIDO POR</Text>
           </View>
           <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { flex: 1 }]}>Nombre: {acta.ENTREGADO_POR}</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>FIRMA</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}> </Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>FIRMA</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}> </Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 1 }]}>NOMBRE</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>{acta.NOMBRE_ENTREGA || 'N/A'}</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>NOMBRE</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>{acta.NOMBRE_RECIBE || 'N/A'}</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 1 }]}>N.CEDULA</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>{acta.EMP_ENTR_CEDULA || 'N/A'}</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>N.CEDULA</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>{acta.EMP_CEDULA || 'N/A'}</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 1 }]}>CARGO</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>{acta.CARGO_ENTREGA || 'N/A'}</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>CARGO</Text>
+            <Text style={[styles.tableCell, { flex: 1 }]}>{acta.CARGO_RECIBE || 'N/A'}</Text>
           </View>
           {/* Agregar */}
         </View>
+        <Text style={styles.footer}>NOTA: Al momento de la devolucion del equipo si presenta danos por mal uso no registrados en el acta de entrega, o que no se haya reportado, el ususario sera responsable del costo del arreglo.</Text>
+
       </Page>
     </Document>
   );
