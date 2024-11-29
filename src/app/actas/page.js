@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { getActas } from '@/app/actions/funciones_Actas';
 import ActaList from '@/app/components/ActaList';
 import ActaForm from '@/app/components/ActaForm';
+import { deleteActa } from '@/app/actions/funciones_Actas';
 
 export default function Actas() {
   const [actas, setActas] = useState([]);
@@ -37,41 +38,59 @@ export default function Actas() {
   };
 
   return (
-    <div className="container mx-auto py-6">
-      <h1 className="text-2xl font-bold mb-4">Listado de Actas</h1>
+    <div className="container mx-auto py-10 px-6 sm:px-12 bg-gray-50 rounded-lg shadow-lg">
+      <h1 className="text-3xl font-semibold text-gray-800 mb-6 text-center tracking-tight">
+        Listado de Actas
+      </h1>
 
       {/* Botón para crear una nueva acta */}
-      <button
-        onClick={handleCreateNewActa}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mb-4"
-      >
-        Crear Nueva Acta
-      </button>
+      <div className="flex justify-center mb-8">
+        <button
+          onClick={handleCreateNewActa}
+          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full font-medium shadow-lg hover:shadow-2xl hover:from-blue-600 hover:to-blue-700 transition-all"
+        >
+          Crear Nueva Acta
+        </button>
+      </div>
 
+      {/* Mensaje de carga o lista de actas */}
       {isLoading ? (
-        <p>Cargando actas...</p>
+        <p className="text-center text-gray-500 font-medium">Cargando actas...</p>
       ) : (
-        <ActaList actas={actas} />
+        <ActaList
+          actas={actas}
+          deleteActa={async (id) => {
+            try {
+              await deleteActa(id);
+              setActas((prevActas) => prevActas.filter((acta) => acta.ID_ACT !== id));
+            } catch (error) {
+              console.error("Error al eliminar el acta:", error);
+              alert("Hubo un error al eliminar el acta.");
+            }
+          }}
+        />
       )}
 
       {/* Mostrar el formulario para crear o editar una acta */}
       {showForm && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded shadow-md w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
-      <button
-        onClick={() => setShowForm(false)}
-        className="absolute top-4 right-4 text-red-500 hover:underline"
-      >
-        Cerrar
-      </button>
-      <ActaForm
-        actaInicial={selectedActa}
-        onSubmitSuccess={handleFormSubmitSuccess}
-      />
-    </div>
-  </div>
-)}
-
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-8">
+            <button
+              onClick={() => setShowForm(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition"
+            >
+              ✖
+            </button>
+            <h2 className="text-xl font-medium text-gray-700 mb-4">
+              {selectedActa ? "Editar Acta" : "Nueva Acta"}
+            </h2>
+            <ActaForm
+              actaInicial={selectedActa}
+              onSubmitSuccess={handleFormSubmitSuccess}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

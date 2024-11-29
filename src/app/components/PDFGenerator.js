@@ -88,7 +88,7 @@ function PDFDocument({ acta }) {
             <View style={styles.tableRow}>
               <Image
                 style={[styles.tableCell]}
-                src="https://th.bing.com/th/id/OIP.rdKCkWwjxfE0DuHWy8Z4eQHaHa?rs=1&pid=ImgDetMain" // Reemplaza con la URL de tu imagen
+                src="https://i.vimeocdn.com/portrait/10154280_640x640" // Reemplaza con la URL de tu imagen
               />
               <View style={[styles.tableCell2, { flex: 2 }]}>
                 <Text style={[styles.tableCell]} >GT-SI-R-02</Text>
